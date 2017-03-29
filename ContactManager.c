@@ -12,7 +12,7 @@ typedef struct record{
 	char telnum[32];
 	char email[32];
 }record;
-
+	char zero[160];
 //function prototype define 
 int menuDisplay();
 void setOption(int*, int*, int*);
@@ -145,10 +145,43 @@ void insertItem(int filedes){
 
 // Delete the item in a record unit by the appropriate field
 void deleteItem(int filedes){
+	record temp;
+	char lookAround[64], searchInfo[64];
+	int fieldSize, fieldPoint, offset;
+	int isEof = (int)lseek(filedes, 0, SEEK_END);
+    	lseek(filedes, 0 ,SEEK_SET);
+    
+   	setOption(&fieldSize, &fieldPoint, &offset);
+    
+   	printf("Enter the information you want to search\n");
+    	printf(">>");
+    	scanf("%s",searchInfo);
 
-	///////////////////////
-	// Your Assignment ! //
-	///////////////////////
+    	lseek(filedes, fieldPoint, SEEK_CUR);
+    	while(lseek(filedes, 0, SEEK_CUR)<isEof){
+		read(filedes, lookAround, fieldSize);
+		if(!strcmp(searchInfo, lookAround)){
+			lseek(filedes, (OFFSET-(fieldPoint+fieldSize)), SEEK_CUR);
+	    		do{
+            		read(filedes, temp.name, 32);
+            		read(filedes, temp.addr, 64);
+            		read(filedes, temp.telnum, 32);
+            		read(filedes, temp.email, 32);
+	    		lseek(filedes, (-2)*(OFFSET), SEEK_CUR);
+	    		write(filedes, temp.name, 32);
+            		write(filedes, temp.addr, 64);
+            		write(filedes, temp.telnum, 32);
+            		write(filedes, temp.email, 32);
+	    		lseek(filedes, OFFSET, SEEK_CUR);
+	    		}while(lseek(filedes, 0, SEEK_CUR)<isEof);
+		lseek(filedes, -OFFSET, SEEK_END);
+		write(filedes, zero,160);
+		break;
+        }
+        lseek(filedes, offset, SEEK_CUR);
+    }
+
+    lseek(filedes, 0, SEEK_SET);
 
 	printf("\nPress Enter key to go back menu screen\n");
 	getchar();
@@ -157,11 +190,52 @@ void deleteItem(int filedes){
 
 // Update the item in a record unit by the appropriate field
 void updateItem(int filedes){
+	record temp;
+	char lookAround[64], searchInfo[64];
+    	int fieldSize, fieldPoint, offset;
+    	int isEof = (int)lseek(filedes, 0, SEEK_END);
+    	lseek(filedes, 0 ,SEEK_SET);
+	setOption(&fieldSize, &fieldPoint, &offset);
+	printf("Enter the information you want to update\n");
+	printf(">>");
+    	scanf("%s",searchInfo);
 
-	///////////////////////
-	// Your Assignment ! //
-	///////////////////////
+    	lseek(filedes, fieldPoint, SEEK_CUR);
+    	while(lseek(filedes, 0, SEEK_CUR)<isEof){
+        read(filedes, lookAround, fieldSize);
+        if(!strcmp(searchInfo, lookAround)){
+            lseek(filedes, (-1*(fieldPoint+fieldSize)), SEEK_CUR);
+	    printf("name: ");
+     	    scanf("%s",temp.name);
+            printf("addr : ");
+            scanf("%s",temp.addr);
+            printf("telnum : ");
+            scanf("%s",temp.telnum);
+            printf("email : ");
+            scanf("%s", temp.email);
 
+            write(filedes, temp.name, 32);
+            write(filedes, temp.addr, 64);
+            write(filedes, temp.telnum, 32);
+            write(filedes, temp.email, 32);
+            break;
+ }
+        lseek(filedes, offset, SEEK_CUR);
+    }
+    if(lseek(filedes, 0, SEEK_CUR)<(isEof+1)){
+            printf("\n  The result you want\n");
+            printf("==========================\n");
+            printf("name    :%s\n",temp.name);
+            printf("address :%s\n",temp.addr);
+            printf("contact :%s\n",temp.telnum);
+            printf("mail    :%s\n",temp.email);
+            printf("==========================\n");
+	
+            }else{
+                    printf("\nYour Information dosen't exist\n");
+            }
+
+    lseek(filedes, 0, SEEK_SET);
 	printf("\nPress Enter key to go back menu screen\n");
 	getchar();
 	getchar();
@@ -216,10 +290,23 @@ void searchItem(int filedes){
 
 // Print all Items existing in file
 void showAllItem(int filedes){
+	record temp;
+	char lookAround[64];
+	int isEof = (int)lseek(filedes, 0, SEEK_END);
+	lseek(filedes, 0 , SEEK_SET);
 
-	///////////////////////
-	// Your Assignment ! //
-	///////////////////////
+	while(lseek(filedes, 0, SEEK_CUR) <isEof){
+		read(filedes, temp.name, 32);
+		read(filedes, temp.addr, 64);
+		read(filedes, temp.telnum, 32);
+		read(filedes, temp.email, 32);
+		printf("==========================\n");
+            	printf("name    :%s\n",temp.name);
+            	printf("address :%s\n",temp.addr);
+            	printf("contact :%s\n",temp.telnum);
+            	printf("mail    :%s\n",temp.email);
+		}
+	 printf("==========================\n");
 
 	printf("\nPress Enter key to go back menu screen\n");
 	getchar();
