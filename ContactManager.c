@@ -12,7 +12,7 @@ typedef struct record{
 	char telnum[32];
 	char email[32];
 }record;
-	char zero[160];
+struct	record zero;
 //function prototype define 
 int menuDisplay();
 void setOption(int*, int*, int*);
@@ -175,7 +175,10 @@ void deleteItem(int filedes){
 	    		lseek(filedes, OFFSET, SEEK_CUR);
 	    		}while(lseek(filedes, 0, SEEK_CUR)<isEof);
 		lseek(filedes, -OFFSET, SEEK_END);
-		write(filedes, zero,160);
+		write(filedes, zero.name, 32);
+        write(filedes, zero.addr, 64);
+        write(filedes, zero.telnum, 32);
+        write(filedes, zero.email, 32);
 		break;
         }
         lseek(filedes, offset, SEEK_CUR);
@@ -300,6 +303,8 @@ void showAllItem(int filedes){
 		read(filedes, temp.addr, 64);
 		read(filedes, temp.telnum, 32);
 		read(filedes, temp.email, 32);
+        if(!(strcmp(zero.name,temp.name)||strcmp(zero.addr,temp.addr)||strcmp(zero.telnum,temp.telnum)||strcmp(zero.email,temp.email)))
+            continue;
 		printf("==========================\n");
             	printf("name    :%s\n",temp.name);
             	printf("address :%s\n",temp.addr);
